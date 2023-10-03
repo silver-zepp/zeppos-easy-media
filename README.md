@@ -9,7 +9,8 @@ The `SoundPlayer` class allows you to play sound files. Here's an example of how
 import { SoundPlayer } from 'easy-media.js';
 
 // create a new SoundPlayer that stops when changing files
-// if "stop_on_play" flag is set to true, then immediately interrupts the currently playing sound and plays it again
+// if "stop_on_play" flag is set to true, then immediately
+// interrupts the currently playing sound and plays it again
 const player = new SoundPlayer("my-sound.mp3", true); // stop_on_play = true
 player.play();  // plays the first file
 
