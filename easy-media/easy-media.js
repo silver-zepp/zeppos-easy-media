@@ -1,5 +1,6 @@
-/** @about Easy Media 1.0.0 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
+/** @about Easy Media 1.0.2 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
 import { create, id, codec } from "@zos/media";
+
 /**
  * Class representing a sound player.
  */
@@ -8,6 +9,7 @@ export class SoundPlayer {
   #filename;
   #is_playing;
   #auto_destroy;
+
   /**
    * Create a sound player.
    * @param {string} filename - The name of the file to play.
@@ -43,6 +45,28 @@ export class SoundPlayer {
     }
     this.#is_playing = true;
     this.#player.prepare();
+  }
+
+  /**
+   * Pause the sound.
+   * If the sound is playing, it pauses the sound.
+   */
+   pause() {
+    if (this.#is_playing) {
+      this.#player.pause();
+      this.#is_playing = false;
+    }
+  }
+
+  /**
+   * Resume the sound.
+   * If the sound is paused, it resumes the sound.
+   */
+   resume() {
+    if (!this.#is_playing) {
+      this.#player.resume();
+      this.#is_playing = true;
+    }
   }
 
   /**
@@ -126,4 +150,6 @@ export class SoundRecorder {
  * @changelog
  * 1.0.0
  * - initial release
+ * 1.0.2
+ * - @add pause and resume methods
  */
