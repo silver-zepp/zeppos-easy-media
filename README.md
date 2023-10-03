@@ -17,6 +17,12 @@ player.play();  // plays the first file
 // in case later you have to change the file (.mp3, .opus)
 player.changeFile('path-to-another-audio-file');  // stops the first file and prepares the second one
 
+// pause the playing sound
+player.pause()
+
+// resume playback
+player.resume()
+
 // stops the playing sound
 player.stop();
 ```
