@@ -1,6 +1,6 @@
 # Sound Player and Recorder Library for ZeppOS
 This library provides two classes, `SoundPlayer` and `SoundRecorder`, for playing and recording sounds respectively.
-It wraps over the [official approach](https://docs-testing.zepp.com/docs/reference/device-app-api/newAPI/media/), is more user-friendly, and introduces an extra feature that allows for the cancellation of any ongoing sound playback.
+It wraps over the [official approach](https://docs.zepp.com/docs/reference/device-app-api/newAPI/media/), is more user-friendly, and introduces an extra feature that allows for the cancellation of any ongoing sound playback.
 
 ## SoundPlayer
 The `SoundPlayer` class allows you to play sound files. Here's an example of how to use it:
