@@ -25,6 +25,16 @@ player.resume()
 
 // stops the playing sound
 player.stop();
+
+// NEW (!) setters/getters
+player.get.volume();    // get the current playback volume
+player.get.duration();  // get the total duration of the currently playing media file
+player.get.title();     // get the title of the currently playing media file
+player.get.artist();    // get the artist of the currently playing media file
+player.get.mediaInfo(); // get the media info of the currently playing media file
+player.get.status();    // get the current status of the player
+
+player.set.volume(50);  // set the playback volume to 50%
 ```
 
 ## Methods
