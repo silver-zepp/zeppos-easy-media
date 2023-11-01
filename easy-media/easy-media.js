@@ -1,4 +1,4 @@
-/** @about Easy Media 1.0.2 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
+/** @about Easy Media 1.0.3 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
 import { create, id, codec } from "@zos/media";
 
 /**
@@ -11,6 +11,16 @@ export class SoundPlayer {
   #auto_destroy;
 
   /**
+   * Sound Player Getters.
+   */
+  get;
+
+  /**
+   * Sound Player Setters.
+   */
+  set;
+
+  /**
    * Create a sound player.
    * @param {string} filename - The name of the file to play.
    * @param {boolean} stop_on_change - Whether to stop playback when changing files.
@@ -21,6 +31,9 @@ export class SoundPlayer {
     this.#auto_destroy = stop_on_change;
     this.#player.setSource(this.#player.source.FILE, { file: this.#filename });
     this.#is_playing = false;
+
+    this.get = new Get(this.#player);
+    this.set = new Set(this.#player);
 
     this.#player.addEventListener(this.#player.event.PREPARE, (result) => {
       if (result) {
@@ -39,7 +52,7 @@ export class SoundPlayer {
    * Play the sound.
    * If the sound is already playing, it stops and prepares the sound again.
    */
-   play() {
+  play() {
     if (this.#is_playing && this.#auto_destroy) {
       this.stop();
     }
@@ -51,7 +64,7 @@ export class SoundPlayer {
    * Pause the sound.
    * If the sound is playing, it pauses the sound.
    */
-   pause() {
+  pause() {
     if (this.#is_playing) {
       this.#player.pause();
       this.#is_playing = false;
@@ -62,7 +75,7 @@ export class SoundPlayer {
    * Resume the sound.
    * If the sound is paused, it resumes the sound.
    */
-   resume() {
+  resume() {
     if (!this.#is_playing) {
       this.#player.resume();
       this.#is_playing = true;
@@ -146,10 +159,85 @@ export class SoundRecorder {
   }
 }
 
+class Get {
+  #player;
+
+  constructor(player) {
+    this.#player = player;
+  }
+
+  /**
+   * Get the current playback volume.
+   * @returns {number} The current volume.
+   */
+  get volume() {
+    return this.#player.getVolume();
+  }
+
+  /**
+   * Get the total duration of the currently playing media file.
+   * @returns {number} The total duration in seconds.
+   */
+  get duration() {
+    return this.#player.getDuration();
+  }
+
+  /**
+   * Get the title of the currently playing media file.
+   * @returns {string | undefined} The title of the file.
+   */
+  get title() {
+    return this.#player.getTitle();
+  }
+
+  /**
+   * Get the artist of the currently playing media file.
+   * @returns {string | undefined} The artist of the file.
+   */
+  get artist() {
+    return this.#player.getArtist();
+  }
+
+  /**
+   * Get the media info of the currently playing media file.
+   * @returns {MediaInfo} The media info of the file.
+   */
+  get mediaInfo() {
+    return this.#player.getMediaInfo();
+  }
+
+  /**
+   * Get the current status of the player.
+   * @returns {number} The current status.
+   */
+  get status() {
+    return this.#player.getStatus();
+  }
+}
+
+class Set {
+  #player;
+
+  constructor(player) {
+    this.#player = player;
+  }
+
+  /**
+   * Set the playback volume.
+   * @param {number} vol - The new volume.
+   * @returns {boolean} Whether the setting was successful.
+   */
+  set volume(vol) {
+    return this.#player.setVolume(vol);
+  }
+}
+
 /**
  * @changelog
  * 1.0.0
  * - initial release
  * 1.0.2
  * - @add pause and resume methods
+ * 1.0.3
+ * - @add setters and getters
  */
