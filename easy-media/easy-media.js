@@ -1,4 +1,4 @@
-/** @about Easy Media 1.0.3 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
+/** @about Easy Media 1.0.4 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
 import { create, id, codec } from "@zos/media";
 
 /**
@@ -57,6 +57,8 @@ export class SoundPlayer {
       this.stop();
     }
     this.#is_playing = true;
+    
+    this.#player.setSource(this.#player.source.FILE, { file: this.#filename }); // @fix 1.0.4
     this.#player.prepare();
   }
 
@@ -240,4 +242,6 @@ class Set {
  * - @add pause and resume methods
  * 1.0.3
  * - @add setters and getters
+ * 1.0.4
+ * - @fix sound wasn't playing after the first play
  */
