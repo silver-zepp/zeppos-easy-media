@@ -8,11 +8,12 @@ The `SoundPlayer` class allows you to play sound files. Here's an example of how
 ```js
 import { SoundPlayer } from 'easy-media.js';
 
-// create a new SoundPlayer that stops when changing files
-const player = new SoundPlayer("my-sound.mp3", true); // stop_on_play = true
-// if "stop_on_play" flag is set to true, then immediately
-// interrupts the currently playing sound and plays it again
+// create a new SoundPlayer
+const player = new SoundPlayer("my-sound.mp3"); 
 player.play();  // plays the first file
+// or
+const player = new SoundPlayer(); 
+player.play("my-sound.mp3"); // play any file by its path
 
 // in case later you have to change the file (.mp3, .opus)
 player.changeFile('path-to-another-audio-file');  // stops the first file and prepares the second one
@@ -27,12 +28,12 @@ player.resume()
 player.stop();
 
 // NEW (!) setters/getters
-player.get.volume();    // get the current playback volume
-player.get.duration();  // get the total duration of the currently playing media file
-player.get.title();     // get the title of the currently playing media file
-player.get.artist();    // get the artist of the currently playing media file
-player.get.mediaInfo(); // get the media info of the currently playing media file
-player.get.status();    // get the current status of the player
+const volume = player.get.volume;       // get the current playback volume
+const duration = player.get.duration;   // get the total duration of the currently playing media file
+const title = player.get.title;         // get the title of the currently playing media file
+const artist = player.get.artist;       // get the artist of the currently playing media file
+const media_info = player.get.mediaInfo;// get the media info of the currently playing media file
+const status = player.get.status;       // get the current status of the player
 
 player.set.volume(50);  // set the playback volume to 50%
 ```
