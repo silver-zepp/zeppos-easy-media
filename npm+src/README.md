@@ -5,9 +5,6 @@ The library further encapsulates our [raw approach](https://docs.zepp.com/docs/r
 ## Install the library from NPM registry
 `npm i @silver-zepp/easy-media`
 
-## Install example on your Balance
-<img width="480px" src="./assets/media-example-qr-code.png"/>
-
 ## SoundPlayer
 The `SoundPlayer` class allows you to play sound files. Here's an example of how to use it:
 

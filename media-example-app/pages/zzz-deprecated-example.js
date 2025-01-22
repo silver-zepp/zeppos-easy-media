@@ -1,14 +1,21 @@
-import VisLog from "@silver-zepp/vis-log"
-import { SoundPlayer } from "../libs/easy-media";
-import AutoGUI from "@silver-zepp/autogui";
-const gui = new AutoGUI();
+/** 
+ * THIS EXAMPLE MIGHT NO LONGER WORK AND IS KEPT AS A REFERENCE.
+ * Please use the new `example.js` which implements the queue internally. 
+ */
 
-const vis = new VisLog();
-const player = new SoundPlayer();
+import VisLog from "@silver-zepp/vis-log"
+import { SoundPlayer } from "../../npm+src/dist/sound-player";
+import AutoGUI from "@silver-zepp/autogui";
 
 import { setPageBrightTime } from '@zos/display';
 setPageBrightTime({ brightTime: 60000 });
 
+const gui = new AutoGUI();
+const vis = new VisLog();
+const player = new SoundPlayer();
+
+// some of these files are no longer available, this example to work
+// add some files with the same names, or remove the unused ones
 const media_arr = [
   "track1",   // 42s
   "track2",
@@ -26,12 +33,12 @@ function playMedia(id){
   
   // wait some time to make sure the file is preloaded
   setTimeout(() => {
-    const dur = player.get.duration;
-    const info = player.get.mediaInfo;
-    const status = player.get.status;
-    const vol = player.get.volume;
-    const title = player.get.title;
-    const artist = player.get.artist;
+    const dur = player.get.duration();
+    const info = player.get.mediaInfo();
+    const status = player.get.status();
+    const vol = player.get.volume();
+    const title = player.get.title();
+    const artist = player.get.artist();
 
     vis.log("dur:", dur);
     vis.log("info:", JSON.stringify(info));
@@ -57,10 +64,10 @@ function playSequence() {
     player.play(full_path);
 
     function checkStatus() {
-      const status = player.get.status;
+      const status = player.get.status();
       const prepared = 5; // prepared state ID
       if (status === prepared) {
-        const dur = player.get.duration || 1; // properly handle files with < 1s duration
+        const dur = player.get.duration() || 1; // properly handle files with < 1s duration
         vis.log("Duration:", dur);
         
         // wait for the file to finish playing
@@ -104,6 +111,10 @@ Page({
     gui.render();
 
     vis.updateSettings({ line_count: 6 });
+  },
+
+  onDestroy(){
+    player.destroy();
   }
 })
 

@@ -1,0 +1,39 @@
+{
+    "name": "@silver-zepp/easy-media",
+    "version": "1.1.0",
+    "description": "EasyMedia - Sound Player and Recorder Library for ZeppOS.",
+    "main": "dist/sound-player.js",
+    "types": "ts/sound-player.d.ts",
+    "exports": {
+      ".": {
+        "import": "./dist/sound-player.js",
+        "types": "./ts/sound-player.d.ts"
+      },
+      "./recorder": {
+        "import": "./dist/sound-recorder.js",
+        "types": "./ts/sound-recorder.d.ts"
+      }
+    },
+    "files": [
+      "dist/*.js",
+      "dist/required/*.js",
+      "ts/*.d.ts",
+      "!dist/*.src.js",
+      "!dist/required/*.src.js"
+    ],
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "zeppos": true,
+    "author": "Silver, Zepp Health",
+    "license": "MIT",
+    "keywords": [
+      "zeppos",
+      "Zepp OS",
+      "amazfit",
+      "easy media",
+      "media",
+      "mp3",
+      "opus"
+    ]
+  }
