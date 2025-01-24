@@ -12,7 +12,7 @@ The library further encapsulates our [raw approach](https://docs.zepp.com/docs/r
 The `SoundPlayer` class allows you to play sound files. Here's an example of how to use it:
 
 ```js
-import { SoundPlayer } from '@silver-zepp/easymedia';
+import { SoundPlayer } from '@silver-zepp/easy-media';
 
 // create a new SoundPlayer
 const player = new SoundPlayer(); 
@@ -88,7 +88,7 @@ Destroys the player. If the sound is playing, it stops the sound and removes eve
 The SoundRecorder class allows you to record sounds. Here’s an example of how to use it:
 
 ```js
-import { SoundRecorder } from '@silver-zepp/easymedia/recorder';
+import { SoundRecorder } from '@silver-zepp/easy-media/recorder';
 
 const recorder = new SoundRecorder('mic-recording.opus');
 recorder.start();
