@@ -30,11 +30,18 @@ export class SoundPlayer {
   #is_playing;
   #play_start_time;
   #auto_destroy;
+  
   #get;
   #set;
+  
   #cb_prepare = null;
   #cb_complete = null;
   #cb_on_complete = null;
+  #cb_on_fail = null;
+
+  #cb_play_timeout = null;
+  #play_timeout_duration = 3000;
+
   #use_queue;
   #queue_arr = [];
 
@@ -97,6 +104,14 @@ export class SoundPlayer {
   }
 
   /**
+   * Set the onFail callback.
+   * @param {(info: PlaybackInfo) => void} callback - The callback function to be called when playback fails.
+   */
+  onFail(callback) {
+    this.#cb_on_fail = callback;
+  }
+
+  /**
    * Play the sound.
    * If a path is provided, it changes the file and plays it.
    * If the sound is already playing and use_queue is true, it adds the sound to the queue.
@@ -131,6 +146,18 @@ export class SoundPlayer {
 
       this.#player.setSource(this.#player.source.FILE, { file: fp });
       this.#player.prepare();
+
+      // playback timeout monitor
+      this.#cb_play_timeout = ()=> {
+        if (this.#is_playing && this.#cb_on_fail) {
+          const info = this.#getPlaybackInfo();
+          this.#cb_on_fail(info);
+          this.stop();
+        }
+      };
+
+      setTimeout(this.#cb_play_timeout, this.#play_timeout_duration);
+
     })
   }
 
@@ -208,6 +235,11 @@ export class SoundPlayer {
         this.#cb_prepare = null;
         this.#cb_complete = null;
 
+        if (this.#cb_play_timeout) {
+          clearTimeout(this.#cb_play_timeout);
+          this.#cb_play_timeout = null;
+        }
+
         this.#player = null;
       }
 
@@ -222,19 +254,28 @@ export class SoundPlayer {
       } else {
         debugLog(3, "(event) PREPARE. ERR: Releasing resources!");
         this.#player.release();
+
+        if (this.#cb_play_timeout) {
+          clearTimeout(this.#cb_play_timeout);
+          this.#cb_play_timeout = null;
+        }
+        if (this.#cb_on_fail) {
+          const info = this.#getPlaybackInfo();
+          this.#cb_on_fail(info);
+        }
       }
     };
 
     this.#cb_complete = () => {
       debugLog(3, "(event) COMPLETE");
-      const dur = QuickJS.now() - this.#play_start_time;
+
+      if (this.#cb_play_timeout) {
+        clearTimeout(this.#cb_play_timeout);
+        this.#cb_play_timeout = null;
+      }
+
       /** @type {PlaybackInfo} */
-      const info = {
-        full_path: this.#file_info.full_path,
-        path: this.#file_info.path,
-        name: this.#file_info.name,
-        duration: dur,
-      };
+      const info = this.#getPlaybackInfo(true);
       
       this.stop();
 
@@ -259,6 +300,22 @@ export class SoundPlayer {
     this.#file_info.full_path = full_path;
     this.#file_info.path = last === -1 ? '' : full_path.slice(0, last + 1);
     this.#file_info.name = last === -1 ? full_path : full_path.slice(last + 1);
+  }
+
+  #getPlaybackInfo(precise = false) {
+    const info = {
+      full_path: this.#file_info.full_path,
+      path: this.#file_info.path,
+      name: this.#file_info.name,
+    };
+
+    if (precise && this.#play_start_time) {
+      info.duration = QuickJS.now() - this.#play_start_time;
+    } else {
+      info.duration = this.get.duration() * 1000; // in ms for consistency
+    }
+
+    return info;
   }
 
   /**
@@ -292,4 +349,6 @@ export class SoundPlayer {
  * - @upd all params to SoundPlayer are now optional. ie SoundPlayer({ path: my_file })
  * - @add player.get.statusName() -> IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, PAUSED
  * - @add more getters in the Get subclass: .isPlaying(), .isPaused(), .isStopped()
+ * 1.1.1
+ * - @add player.onFail((info) => { ... }) callback that can be used to show a notification "Speaker not available"
  */

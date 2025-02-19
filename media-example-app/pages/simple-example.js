@@ -38,6 +38,13 @@ Page({
 
       // ...or play the next song in the array (achieving sequence)
     });
+
+    // executes if the playback fails (in case the device lacks a speaker)
+    player.onFail((info) => {
+      vis.log(`Failed to play ${info.name}.`);
+      vis.log("Does your device have a speaker?");
+      vis.log("Try using BLE Headphones!");
+    });
   },
 
   playSFX(index) {
