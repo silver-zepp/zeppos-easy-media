@@ -1,4 +1,4 @@
-/** @about Easy Media 1.1.1 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
+/** @about Easy Media 1.1.2 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
 import { create, id } from "@zos/media";
 import { debugLog, QuickJS, setDebugLevel, TimeIt } from "./required/helpers";
 import { __SPExtra } from "./required/player-extra";
@@ -109,6 +109,18 @@ export class SoundPlayer {
    */
   onFail(callback) {
     this.#cb_on_fail = callback;
+  }
+
+  /**
+   * Set a custom timeout for onFail event.
+   * @param {Number} ms - The timeout in milliseconds. `default` = 3000ms.
+   */
+  setFailTimeout(ms) {
+    if (ms < 0) {
+      debugLog(1, "Timeout can't be a negative number.");
+      return;
+    }
+    this.#play_timeout_duration = ms;
   }
 
   /**
@@ -354,4 +366,6 @@ export class SoundPlayer {
  * - @add more getters in the Get subclass: .isPlaying(), .isPaused(), .isStopped()
  * 1.1.1
  * - @add player.onFail((info) => { ... }) callback that can be used to show a notification "Speaker not available"
+ * 1.1.2
+ * - @add player.setFailTimeout(int), by default the onFail has a 3000 timeout, you can modify it with this method
  */

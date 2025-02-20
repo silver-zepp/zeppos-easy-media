@@ -42,6 +42,11 @@ export class SoundPlayer {
      */
     onFail(callback: (info: PlaybackInfo) => void): void;
     /**
+     * Set a custom timeout for onFail event.
+     * @param {Number} ms - The timeout in milliseconds. `default` = 3000ms.
+     */
+    setFailTimeout(ms: number): void;
+    /**
      * Play the sound.
      * If a path is provided, it changes the file and plays it.
      * If the sound is already playing and use_queue is true, it adds the sound to the queue.

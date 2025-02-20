@@ -2,8 +2,8 @@
 import "../libs/required";
 import AutoGUI, { multiplyHexColor } from "@silver-zepp/autogui";
 import VisLog from "@silver-zepp/vis-log";
-import { SoundPlayer } from "../../npm+src/dist/sound-player.src";
-// import { SoundPlayer } from "@silver-zepp/easy-media";
+// import { SoundPlayer } from "../../npm+src/dist/sound-player.src";
+import { SoundPlayer } from "@silver-zepp/easy-media";
 
 const gui = new AutoGUI();
 const vis = new VisLog();
@@ -54,6 +54,7 @@ Page({
 
     vis.updateSettings({ line_count: 4 });
 
+    // execute something every time sound finishes playing
     player.onComplete((info) => {
       vis.log(`F: ${info.name} T: ${info.duration} ms`);
       
@@ -61,6 +62,10 @@ Page({
         this.seqPlayNext();
       }
     });
+
+    // reduce the fail detectiontimeout (default 3000ms). 
+    // lower numbers are less stable.
+    player.setFailTimeout(1000);
 
     // executes if the playback fails (in case the device lacks a speaker)
     player.onFail((info) => {

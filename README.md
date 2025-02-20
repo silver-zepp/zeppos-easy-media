@@ -64,6 +64,16 @@ player.onComplete((info) => {
   console.log(`Path: ${info.path}`);  
 });
 
+// reduce the fail detection detection (default 3000ms). Lower numbers are less stable.
+player.setFailTimeout(1000);
+
+// executes if the playback fails (in case the device lacks a speaker)
+player.onFail((info) => {
+  vis.log(`Failed to play ${info.name}.`);
+  vis.log("Does your device have a speaker?");
+  vis.log("Try using BLE Headphones!");
+});
+
 // status name getter 
 // IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, PAUSED
 const status = player.get.statusName();
