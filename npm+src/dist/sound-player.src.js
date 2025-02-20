@@ -39,7 +39,7 @@ export class SoundPlayer {
   #cb_on_complete = null;
   #cb_on_fail = null;
 
-  #cb_play_timeout = null;
+  #play_timeout = null;
   #play_timeout_duration = 3000;
 
   #use_queue;
@@ -120,6 +120,8 @@ export class SoundPlayer {
   play(path) {
     TimeIt(3, () => {
 
+      this.#resetPlaybackMonitor();
+
       if (path) {
         this.changeFile(path);
       }
@@ -148,16 +150,16 @@ export class SoundPlayer {
       this.#player.prepare();
 
       // playback timeout monitor
-      this.#cb_play_timeout = ()=> {
-        if (this.#is_playing && this.#cb_on_fail) {
-          const info = this.#getPlaybackInfo();
-          this.#cb_on_fail(info);
-          this.stop();
-        }
-      };
-
-      setTimeout(this.#cb_play_timeout, this.#play_timeout_duration);
-
+      if (this.#cb_on_fail) {
+        const dur = (this.get.duration() * 1000) + this.#play_timeout_duration;
+        this.#play_timeout = setTimeout(()=> {
+          if (this.#is_playing) {
+            const info = this.#getPlaybackInfo();
+            this.#cb_on_fail(info);
+          }
+        }, dur);
+      }
+      
     })
   }
 
@@ -209,6 +211,8 @@ export class SoundPlayer {
   changeFile(path) {
     TimeIt(3, `New file: ${path}`, () => {
 
+      this.#resetPlaybackMonitor();
+
       if (this.#is_playing && this.#auto_destroy) {
         this.stop();
       }
@@ -235,10 +239,7 @@ export class SoundPlayer {
         this.#cb_prepare = null;
         this.#cb_complete = null;
 
-        if (this.#cb_play_timeout) {
-          clearTimeout(this.#cb_play_timeout);
-          this.#cb_play_timeout = null;
-        }
+        this.#resetPlaybackMonitor();
 
         this.#player = null;
       }
@@ -255,10 +256,7 @@ export class SoundPlayer {
         debugLog(3, "(event) PREPARE. ERR: Releasing resources!");
         this.#player.release();
 
-        if (this.#cb_play_timeout) {
-          clearTimeout(this.#cb_play_timeout);
-          this.#cb_play_timeout = null;
-        }
+        this.#resetPlaybackMonitor();
         if (this.#cb_on_fail) {
           const info = this.#getPlaybackInfo();
           this.#cb_on_fail(info);
@@ -269,10 +267,7 @@ export class SoundPlayer {
     this.#cb_complete = () => {
       debugLog(3, "(event) COMPLETE");
 
-      if (this.#cb_play_timeout) {
-        clearTimeout(this.#cb_play_timeout);
-        this.#cb_play_timeout = null;
-      }
+      this.#resetPlaybackMonitor();
 
       /** @type {PlaybackInfo} */
       const info = this.#getPlaybackInfo(true);
@@ -316,6 +311,14 @@ export class SoundPlayer {
     }
 
     return info;
+  }
+
+  #resetPlaybackMonitor() {
+    debugLog(3);
+    if (this.#play_timeout) {
+      clearTimeout(this.#play_timeout);
+      this.#play_timeout = null;
+    }
   }
 
   /**
