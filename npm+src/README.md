@@ -61,6 +61,13 @@ player.onComplete((info) => {
   console.log(`Path: ${info.path}`);  
 });
 
+// executes if the playback fails (in case the device lacks a speaker)
+player.onFail((info) => {
+  vis.log(`Failed to play ${info.name}.`);
+  vis.log("Does your device have a speaker?");
+  vis.log("Try using BLE Headphones!");
+});
+
 // status name getter 
 // IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, PAUSED
 const status = player.get.statusName();

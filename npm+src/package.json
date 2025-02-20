@@ -1,6 +1,6 @@
 {
     "name": "@silver-zepp/easy-media",
-    "version": "1.1.0-a",
+    "version": "1.1.1-a",
     "description": "EasyMedia - Sound Player and Recorder Library for ZeppOS.",
     "main": "dist/sound-player.js",
     "types": "ts/sound-player.d.ts",

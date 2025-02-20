@@ -1,4 +1,4 @@
-/** @about Easy Media 1.1.0 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
+/** @about Easy Media 1.1.1 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
 import { create, id } from "@zos/media";
 import { debugLog, QuickJS, setDebugLevel, TimeIt } from "./required/helpers";
 import { __SPExtra } from "./required/player-extra";
