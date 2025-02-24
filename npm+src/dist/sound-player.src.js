@@ -1,7 +1,9 @@
-/** @about Easy Media 1.1.2 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
+/** @about Easy Media 1.1.4 @min_zeppos 3.0 @author: Silver, Zepp Health. @license: MIT */
 import { create, id } from "@zos/media";
+import { openSync, writeSync, closeSync, statSync, O_RDWR, O_CREAT, O_TRUNC } from "@zos/fs";
 import { debugLog, QuickJS, setDebugLevel, TimeIt } from "./required/helpers";
 import { __SPExtra } from "./required/player-extra";
+import { MINI_MP3 } from "./required/mini-mp3";
 
 
 /** @typedef {import('./required/player-extra').GetSP_T} GetSP_T */
@@ -161,17 +163,6 @@ export class SoundPlayer {
       this.#player.setSource(this.#player.source.FILE, { file: fp });
       this.#player.prepare();
 
-      // playback timeout monitor
-      if (this.#cb_on_fail) {
-        const dur = (this.get.duration() * 1000) + this.#play_timeout_duration;
-        this.#play_timeout = setTimeout(()=> {
-          if (this.#is_playing) {
-            const info = this.#getPlaybackInfo();
-            this.#cb_on_fail(info);
-          }
-        }, dur);
-      }
-      
     })
   }
 
@@ -259,13 +250,61 @@ export class SoundPlayer {
     });
   }
 
+  /**
+   * Check if the device has a speaker and is able to play files. Execute this event when you need to know if the speaker is available. No other actions required.
+   * @param {{is_available: boolean}} callback - The callback to be called with the result of the availability check.
+   * @example
+   * ```
+   * player.isSpeakerAvailable((bool)=> {
+   *   console.log("isSpeakerAvailable:", bool);
+   * })
+   * ```
+   */
+  isSpeakerAvailable(callback) {
+    TimeIt(3, () => {
+
+      const fp = "data://em_speaker_test.mp3";
+    
+      try {
+        const stat = statSync({
+          path: fp
+        });
+        
+        if (stat && stat.size === MINI_MP3.length) {
+          this.#playTestFile(callback, fp);
+          return;
+        }
+    
+        let fd = openSync({
+          path: fp,
+          flag: O_RDWR | O_CREAT | O_TRUNC, // create or overwrite
+        });
+    
+        writeSync({
+          fd,
+          buffer: MINI_MP3.buffer,
+        });
+    
+        closeSync(fd);
+    
+        this.#playTestFile(callback, fp);
+      } catch (error) {
+        debugLog(1, "Error in isSpeakerAvailable:", error);
+        callback(false);
+      }
+
+    });
+  }
+
   #setupEventListeners() {
     this.#cb_prepare = (result) => {
       debugLog(3, `(event) PREPARE. Result: ${result}`);
       if (result) {
         this.#player.start();
+        // playback timeout monitor
+        this.#setupFailMonitor();
       } else {
-        debugLog(3, "(event) PREPARE. ERR: Releasing resources!");
+        debugLog(1, "(event) PREPARE. ERR: Releasing resources!");
         this.#player.release();
 
         this.#resetPlaybackMonitor();
@@ -292,6 +331,39 @@ export class SoundPlayer {
 
     this.#player.addEventListener(this.#player.event.PREPARE, this.#cb_prepare);
     this.#player.addEventListener(this.#player.event.COMPLETE, this.#cb_complete);
+  }
+
+  #setupFailMonitor() {
+    if (this.#cb_on_fail) {
+      const duration = this.get.duration();
+      const dur = (duration * 1000) + this.#play_timeout_duration;
+      
+      this.#play_timeout = setTimeout(() => {
+        if (this.#is_playing) {
+          const info = this.#getPlaybackInfo();
+          this.#cb_on_fail(info);
+        } 
+      }, dur);
+    }
+  }
+
+  #playTestFile(cb, fp) {
+    const _cb_on_complete = this.#cb_on_complete;
+    const _cb_on_fail = this.#cb_on_fail;
+  
+    this.onComplete(() => {
+      this.#cb_on_complete = _cb_on_complete;
+      this.#cb_on_fail = _cb_on_fail;
+      cb(true);
+    });
+  
+    this.onFail(() => {
+      this.#cb_on_complete = _cb_on_complete;
+      this.#cb_on_fail = _cb_on_fail;
+      cb(false);
+    });
+  
+    this.play(fp);
   }
 
   #queuePlayNext() {
@@ -365,7 +437,10 @@ export class SoundPlayer {
  * - @add player.get.statusName() -> IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, PAUSED
  * - @add more getters in the Get subclass: .isPlaying(), .isPaused(), .isStopped()
  * 1.1.1
- * - @add player.onFail((info) => { ... }) callback that can be used to show a notification "Speaker not available"
+ * - @add player.onFail((info) => { ... }) callback that is used when failback fails for whichever reason
  * 1.1.2
  * - @add player.setFailTimeout(int), by default the onFail has a 3000 timeout, you can modify it with this method
+ * 1.1.4
+ * - @add isSpeakerAvailable((is_available)=> {...}) an event type checker to see if the device has a speaker
+ * - @fix onFail() event for files with a longer duration than the fail timeout
  */

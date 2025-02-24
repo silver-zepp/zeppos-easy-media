@@ -61,15 +61,24 @@ player.onComplete((info) => {
   console.log(`Path: ${info.path}`);  
 });
 
-// reduce the fail detection timeout (default 3000ms). Lower numbers are less stable.
-player.setFailTimeout(1000);
+// reduce the fail detection timeout (default 3000ms). 
+// lower numbers are less stable.
+player.setFailTimeout(2000);
 
-// executes if the playback fails (in case the device lacks a speaker)
+// executes if the playback fails
 player.onFail((info) => {
-  vis.log(`Failed to play ${info.name}.`);
-  vis.log("Does your device have a speaker?");
-  vis.log("Try using BLE Headphones!");
+  console.log(`Failed to play ${info.name}.`);
 });
+
+// check if the device has a speaker
+player.isSpeakerAvailable((bool)=> {
+  if (bool) {
+    console.log("Speaker OK.");
+  } else {
+    console.log("Speaker NOT available.");
+    console.log("Try connecting BLE Headphones.");
+  }
+})
 
 // status name getter 
 // IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, PAUSED

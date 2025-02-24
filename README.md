@@ -44,10 +44,6 @@ const status = player.get.status();       // get the current status of the playe
 
 player.set.volume(50);  // set the playback volume to 50%
 
-// ======================
-// NEW (!) ADD: 1/19/2025
-// ======================
-
 // more verbose logs from the library (1-3), default 1 (critical logs)
 SoundPlayer.SetLogLevel(3); 
 
@@ -64,15 +60,24 @@ player.onComplete((info) => {
   console.log(`Path: ${info.path}`);  
 });
 
-// reduce the fail detection detection (default 3000ms). Lower numbers are less stable.
-player.setFailTimeout(1000);
+// reduce the fail detection timeout (default 3000ms). 
+// lower numbers are less stable.
+player.setFailTimeout(2000);
 
-// executes if the playback fails (in case the device lacks a speaker)
+// executes if the playback fails
 player.onFail((info) => {
-  vis.log(`Failed to play ${info.name}.`);
-  vis.log("Does your device have a speaker?");
-  vis.log("Try using BLE Headphones!");
+  console.log(`Failed to play ${info.name}.`);
 });
+
+// check if the device has a speaker
+player.isSpeakerAvailable((bool)=> {
+  if (bool) {
+    console.log("Speaker OK.");
+  } else {
+    console.log("Speaker NOT available.");
+    console.log("Try connecting BLE Headphones.");
+  }
+})
 
 // status name getter 
 // IDLE, INITIALIZED, PREPARING, PREPARED, STARTED, PAUSED

@@ -78,6 +78,19 @@ export class SoundPlayer {
      * If the sound is playing, it stops the sound and removes event listeners.
      */
     destroy(): void;
+    /**
+     * Check if the device has a speaker and is able to play files. Execute this event when you need to know if the speaker is available. No other actions required.
+     * @param {{is_available: boolean}} callback - The callback to be called with the result of the availability check.
+     * @example
+     * ```
+     * player.isSpeakerAvailable((bool)=> {
+     *   console.log("isSpeakerAvailable:", bool);
+     * })
+     * ```
+     */
+    isSpeakerAvailable(callback: {
+        is_available: boolean;
+    }): void;
     #private;
 }
 export type GetSP_T = import("./required/player-extra").GetSP_T;

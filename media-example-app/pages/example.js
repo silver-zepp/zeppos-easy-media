@@ -13,7 +13,7 @@ const vis = new VisLog();
 const player = new SoundPlayer(); 
 
 const MEDIA_PATH = "assets://raw/media/";
-const sfx_arr = [ "sfx1.mp3", "sfx2.mp3", "sfx3.mp3" ];
+const sfx_arr = [ "long.mp3", "sfx2.mp3", "sfx3.mp3" ];
 const voice_arr = [ "1.mp3", "2.mp3", "3.mp3" ];
 
 const COLORS = {
@@ -63,16 +63,25 @@ Page({
       }
     });
 
-    // reduce the fail detectiontimeout (default 3000ms). 
+    // reduce the fail detection timeout (default 3000ms). 
     // lower numbers are less stable.
-    player.setFailTimeout(1000);
+    player.setFailTimeout(2000);
 
-    // executes if the playback fails (in case the device lacks a speaker)
+    // executes if the playback fails
     player.onFail((info) => {
       vis.log(`Failed to play ${info.name}.`);
-      vis.log("Does your device have a speaker?");
-      vis.log("Try using BLE Headphones!");
     });
+
+    // check if the device has a speaker
+    player.isSpeakerAvailable((bool)=> {
+      if (bool) {
+        vis.log("Speaker OK.");
+      } else {
+        vis.log("Speaker NOT available.");
+        vis.log("Try connecting BLE Headphones.");
+      }
+    })
+    
   },
 
   playSFX(index) {
